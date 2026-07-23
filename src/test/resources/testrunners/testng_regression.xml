@@ -1,8 +1,13 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="商城回归测试 suite" verbose="4" >
+<suite name="商城回归测试 suite" thread-count="2" parallel="tests" verbose="2" >
     <test name = "主页测试" >
         <classes>
             <class name="tests.HomePageTest"/>
         </classes>
-     </test>
+    </test>
+    <test name = "登录页测试" >
+        <classes>
+            <class name="tests.LoginPageTest"/>
+        </classes>
+    </test>
 </suite>

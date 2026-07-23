@@ -48,8 +48,8 @@
                 <version>3.5.5</version>
                 <configuration>
                     <suiteXmlFiles>
-                        <suiteXmlFile>src/test/resources/testrunners/testng_*.xml</suiteXmlFile>
-<!--                        <suiteXmlFile>src/test/resources/testrunners/testng_regression.xml</suiteXmlFile>-->
+<!--                        <suiteXmlFile>src/test/resources/testrunners/testng_*.xml</suiteXmlFile>-->
+                        <suiteXmlFile>src/test/resources/testrunners/testng_regression.xml</suiteXmlFile>
 <!--                        <suiteXmlFile>src/test/resources/testrunners/testng_smoke.xml</suiteXmlFile>-->
                         //该文件位于工程根目录时，直接填写名字，其它位置要加上路径。
                     </suiteXmlFiles>

@@ -3,9 +3,10 @@ package base;
 import com.microsoft.playwright.Page;
 import factory.PlaywrightFactory;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeTest;
 import pages.HomePage;
-import pages.SearchPage;
 
 import java.util.Properties;
 
@@ -14,22 +15,31 @@ public class BaseTest {
     protected Properties prop;
 
     protected HomePage homePage;
-    protected SearchPage searchPage;
 
-    @BeforeMethod
+    @BeforeTest
     public void setUp() {
         pf = new PlaywrightFactory();
         prop = pf.initProp();
 //        System.out.println("读取到的内容："+prop.toString());
-        Page page = pf.initBrowser(prop);
-        // 理想情况应该在4s以内
-        page.setDefaultTimeout(25000);
+        pf.initBrowser(prop);
+    }
 
+    @BeforeMethod
+    public void setUpMethod() {
+        // 每个用例开始前，创建一个全新的 Context/Page 并导航到目标 URL，实现极速隔离
+        Page page = pf.createContextAndPage(prop.getProperty("url"));
+        // 理想情况应该在4s以内
+        page.setDefaultTimeout(10000);
         homePage = new HomePage(page);
-        searchPage = new SearchPage(page);
     }
 
     @AfterMethod
+    public void tearDownMethod() {
+        // 每个用例结束后，销毁当前的 Page 和 Context
+        pf.closeContextAndPage();
+    }
+
+    @AfterTest
     public void tearDown() {
         pf.quitBrowser();
     }

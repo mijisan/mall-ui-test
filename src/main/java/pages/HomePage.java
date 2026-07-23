@@ -8,6 +8,8 @@ import com.microsoft.playwright.options.AriaRole;
 public class HomePage extends BasePage {
     private final Locator searchInput = page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Search"));
     private final Locator searchBtn = page.locator("#search").getByRole(AriaRole.BUTTON);
+    private final Locator myAccountLink = page.locator("span").getByText("My Account");
+    private final Locator loginLink = page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Login"));
 
     public HomePage(Page page) {
         super(page);
@@ -21,7 +23,19 @@ public class HomePage extends BasePage {
         searchInput.fill(productName);
     }
 
-    public void clickSearchBtn() {
+    public SearchPage clickSearchBtn() {
         searchBtn.click();
+        return new SearchPage(page);
     }
+
+    public LoginPage openLoginPage() {
+        myAccountLink.click();
+        loginLink.click();
+        return new LoginPage(page);
+    }
+
+    public SearchPage openSearchPage() {
+        return new SearchPage(page);
+    }
+
 }

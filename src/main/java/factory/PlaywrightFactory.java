@@ -16,37 +16,50 @@ public class PlaywrightFactory {
     Page page;
 //    Properties properties;
 
-    public Page initBrowser(Properties prop) {
+    public void initBrowser(Properties prop) {
 
         String browserName = prop.getProperty("browser").trim().toLowerCase();
+        boolean headlessMode = Boolean.parseBoolean(prop.getProperty("headless"));
         playwright = Playwright.create();
 
         browser = switch (browserName) {
             case "chromium" -> playwright.chromium()
-                    .launch(new BrowserType.LaunchOptions().setHeadless(false));
+                    .launch(new BrowserType.LaunchOptions().setHeadless(headlessMode));
 
             case "firefox" -> playwright.firefox()
-                    .launch(new BrowserType.LaunchOptions().setHeadless(false));
+                    .launch(new BrowserType.LaunchOptions().setHeadless(headlessMode));
 
             case "safari" -> playwright.webkit()
-                    .launch(new BrowserType.LaunchOptions().setHeadless(false));
+                    .launch(new BrowserType.LaunchOptions().setHeadless(headlessMode));
 
             case "chrome" -> playwright.chromium()
                     .launch(new BrowserType.LaunchOptions()
                             .setChannel("chrome")
-                            .setHeadless(false));
+                            .setHeadless(headlessMode));
 
             default -> throw new IllegalArgumentException("无效浏览器名称：" + browserName);
         };
+    }
 
+    /**
+     * 每个测试方法执行前：创建一个完全隔离的 BrowserContext 和 Page
+     */
+    public Page createContextAndPage(String url) {
         context = browser.newContext();
         page = context.newPage();
-        page.navigate(prop.getProperty("url").trim());
+
+        if (url != null && !url.isBlank()) {
+            page.navigate(url.trim());
+        }
         return page;
     }
 
-    public void quitBrowser() {
+
+    public void closeContextAndPage() {
         if (context != null) context.close();
+    }
+
+    public void quitBrowser() {
         if (browser != null) browser.close();
         if (playwright != null) playwright.close();
     }
