@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="商城回归测试 suite" verbose="4" >
+    <test name = "主页测试" >
+        <classes>
+            <class name="tests.HomePageTest"/>
+        </classes>
+     </test>
+</suite>
