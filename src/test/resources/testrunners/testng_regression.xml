@@ -1,5 +1,8 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="商城回归测试 suite" thread-count="2" parallel="tests" verbose="2" >
+    <listeners>
+        <listener class-name="listeners.ExtentReportListener"/>
+    </listeners>
     <test name = "主页测试" >
         <classes>
             <class name="tests.HomePageTest"/>

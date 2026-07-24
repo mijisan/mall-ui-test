@@ -29,7 +29,7 @@ public class BaseTest {
         // 每个用例开始前，创建一个全新的 Context/Page 并导航到目标 URL，实现极速隔离
         Page page = pf.createContextAndPage(prop.getProperty("url"));
         // 理想情况应该在4s以内
-        page.setDefaultTimeout(10000);
+        page.setDefaultTimeout(5000);
         homePage = new HomePage(page);
     }
 

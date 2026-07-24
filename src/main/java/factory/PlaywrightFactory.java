@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
+import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.Properties;
 
 public class PlaywrightFactory {
@@ -13,9 +15,9 @@ public class PlaywrightFactory {
     private final ThreadLocal<Playwright> tlPlaywright = new ThreadLocal<>();
     private final ThreadLocal<Browser> tlBrowser = new ThreadLocal<>(); // 全局复用（如果单线程或配合锁）
     private final ThreadLocal<BrowserContext> tlBrowserContext = new ThreadLocal<>();
-    private final ThreadLocal<Page> tlPage = new ThreadLocal<>();
+    private static final ThreadLocal<Page> tlPage = new ThreadLocal<>();
 
-    public Page getPage() {
+    public static Page getPage() {
         return tlPage.get();
     }
 
@@ -103,5 +105,13 @@ public class PlaywrightFactory {
             log.error("加载配置文件失败", e);
         }
         return prop;
+    }
+
+    public static String takeScreenshot() {
+        String path = System.getProperty("user.dir") + "/target/screenshot/" + System.currentTimeMillis() + ".png";
+        byte[] buffer = getPage().screenshot(new Page.ScreenshotOptions()
+                .setPath(Paths.get(path))
+                .setFullPage(true));
+        return Base64.getEncoder().encodeToString(buffer);
     }
 }
