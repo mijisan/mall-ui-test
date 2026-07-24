@@ -6,6 +6,9 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.MouseButton;
 import constants.AppConstants;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.testng.Assert;
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
@@ -14,8 +17,11 @@ import pages.LoginPage;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
+@Epic("商城ui测试")
+@Feature("登录页")
 public class LoginPageTest extends BaseTest {
-    @Test(priority = -1)
+    @Story("导航至登录页成功")
+    @Test(priority = -1, description = "验证登录页title正确")
     void goToLoginPageTest() {
         LoginPage loginPage = homePage.openLoginPage();
         String title = loginPage.getLoginPageTitle();
@@ -23,7 +29,8 @@ public class LoginPageTest extends BaseTest {
         assertThat(loginPage.getForgetPwdLink()).isVisible();
     }
 
-    @Test
+    @Story("登录成功")
+    @Test(description = "验证用户输入正确的邮箱和密码后成功跳转至账户页")
     void login() {
         LoginPage loginPage = homePage.openLoginPage();
         loginPage.addEmail(prop.getProperty("username"));

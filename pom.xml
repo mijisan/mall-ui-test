@@ -12,6 +12,8 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <aspectj.version>1.9.25.1</aspectj.version>
+        <allure.version>2.35.1</allure.version>
     </properties>
 
     <dependencies>
@@ -26,6 +28,12 @@
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>7.10.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-testng</artifactId>
+            <version>${allure.version}</version>
         </dependency>
 
         <dependency>
@@ -60,7 +68,10 @@
                 <version>3.5.5</version>
                 <configuration>
 <!--                    解决日志控制台乱码（已在jvm添加，但似乎没用呢）-->
-                    <argLine>-Dfile.encoding=UTF-8</argLine>
+                    <argLine>
+                        -Dfile.encoding=UTF-8
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
                     <suiteXmlFiles>
 <!--                        <suiteXmlFile>src/test/resources/testrunners/testng_*.xml</suiteXmlFile>-->
                         <suiteXmlFile>src/test/resources/testrunners/testng_regression.xml</suiteXmlFile>
@@ -68,6 +79,14 @@
                         //该文件位于工程根目录时，直接填写名字，其它位置要加上路径。
                     </suiteXmlFiles>
                 </configuration>
+                <dependencies>
+                    <!-- Allure 利用 AspectJ 来实现 @Step 和 @Attachment 注解的功能 -->
+                    <dependency>
+                        <groupId>org.aspectj</groupId>
+                        <artifactId>aspectjweaver</artifactId>
+                        <version>${aspectj.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

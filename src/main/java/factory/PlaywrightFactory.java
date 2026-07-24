@@ -14,11 +14,15 @@ public class PlaywrightFactory {
     private final Logger log = LoggerFactory.getLogger(PlaywrightFactory.class);
     private final ThreadLocal<Playwright> tlPlaywright = new ThreadLocal<>();
     private final ThreadLocal<Browser> tlBrowser = new ThreadLocal<>(); // 全局复用（如果单线程或配合锁）
-    private final ThreadLocal<BrowserContext> tlBrowserContext = new ThreadLocal<>();
+    private static final ThreadLocal<BrowserContext> tlBrowserContext = new ThreadLocal<>();
     private static final ThreadLocal<Page> tlPage = new ThreadLocal<>();
 
     public static Page getPage() {
         return tlPage.get();
+    }
+
+    public static BrowserContext getContext() {
+        return tlBrowserContext.get();
     }
 
     public void initBrowser(Properties prop) {
@@ -54,6 +58,11 @@ public class PlaywrightFactory {
      */
     public Page createContextAndPage(String url) {
         BrowserContext context = tlBrowser.get().newContext();
+        // 在创建 Context 后立即开启 Trace 录制
+        context.tracing().start(new Tracing.StartOptions()
+                .setScreenshots(true)
+                .setSnapshots(true)
+                .setSources(true));
         tlBrowserContext.set(context);
         Page page = context.newPage();
         tlPage.set(page);
