@@ -28,7 +28,8 @@ public class PlaywrightFactory {
     public void initBrowser(Properties prop) {
 
         String browserName = prop.getProperty("browser").trim().toLowerCase();
-        boolean headlessMode = Boolean.parseBoolean(prop.getProperty("headless"));
+        // 优先使用系统属性（CI 环境），其次使用配置文件
+        boolean headlessMode = Boolean.parseBoolean(System.getProperty("headless", prop.getProperty("headless")));
         Playwright playwright = Playwright.create();
         tlPlaywright.set(playwright);
 

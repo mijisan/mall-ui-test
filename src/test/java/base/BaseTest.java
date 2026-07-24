@@ -2,10 +2,7 @@ package base;
 
 import com.microsoft.playwright.Page;
 import factory.PlaywrightFactory;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.*;
 import pages.HomePage;
 
 import java.util.Properties;
@@ -16,10 +13,14 @@ public class BaseTest {
 
     protected HomePage homePage;
 
+    @Parameters("browser")
     @BeforeTest
-    public void setUp() {
+    public void setUp(String browserName) {
         pf = new PlaywrightFactory();
         prop = pf.initProp();
+        if (browserName != null) {
+            prop.setProperty("browser", browserName);
+        }
 //        System.out.println("读取到的内容："+prop.toString());
         pf.initBrowser(prop);
     }

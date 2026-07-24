@@ -21,7 +21,7 @@ public class HomePage extends BasePage {
         return page.title();
     }
 
-    @Step("输入商品名{0}")
+    @Step("输入商品名：{0}")
     public void addProduct(String productName) {
         searchInput.fill(productName);
     }
