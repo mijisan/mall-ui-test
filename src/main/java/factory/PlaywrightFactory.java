@@ -9,20 +9,24 @@ import java.util.Properties;
 
 public class PlaywrightFactory {
 
-    private static final Logger log = LoggerFactory.getLogger(PlaywrightFactory.class);
-    Playwright playwright;
-    Browser browser;
-    BrowserContext context;
-    Page page;
-//    Properties properties;
+    private final Logger log = LoggerFactory.getLogger(PlaywrightFactory.class);
+    private final ThreadLocal<Playwright> tlPlaywright = new ThreadLocal<>();
+    private final ThreadLocal<Browser> tlBrowser = new ThreadLocal<>(); // 全局复用（如果单线程或配合锁）
+    private final ThreadLocal<BrowserContext> tlBrowserContext = new ThreadLocal<>();
+    private final ThreadLocal<Page> tlPage = new ThreadLocal<>();
+
+    public Page getPage() {
+        return tlPage.get();
+    }
 
     public void initBrowser(Properties prop) {
 
         String browserName = prop.getProperty("browser").trim().toLowerCase();
         boolean headlessMode = Boolean.parseBoolean(prop.getProperty("headless"));
-        playwright = Playwright.create();
+        Playwright playwright = Playwright.create();
+        tlPlaywright.set(playwright);
 
-        browser = switch (browserName) {
+        Browser browser = switch (browserName) {
             case "chromium" -> playwright.chromium()
                     .launch(new BrowserType.LaunchOptions().setHeadless(headlessMode));
 
@@ -39,14 +43,18 @@ public class PlaywrightFactory {
 
             default -> throw new IllegalArgumentException("无效浏览器名称：" + browserName);
         };
+        tlBrowser.set(browser);
+        log.info("浏览器{}启动成功, headless:{}", browserName, headlessMode);
     }
 
     /**
      * 每个测试方法执行前：创建一个完全隔离的 BrowserContext 和 Page
      */
     public Page createContextAndPage(String url) {
-        context = browser.newContext();
-        page = context.newPage();
+        BrowserContext context = tlBrowser.get().newContext();
+        tlBrowserContext.set(context);
+        Page page = context.newPage();
+        tlPage.set(page);
 
         if (url != null && !url.isBlank()) {
             page.navigate(url.trim());
@@ -56,12 +64,25 @@ public class PlaywrightFactory {
 
 
     public void closeContextAndPage() {
-        if (context != null) context.close();
+        if (tlPage.get() != null) {
+            tlPage.get().close();
+            tlPage.remove();
+        }
+        if (tlBrowserContext.get() != null) {
+            tlBrowserContext.get().close();
+            tlBrowserContext.remove();
+        }
     }
 
     public void quitBrowser() {
-        if (browser != null) browser.close();
-        if (playwright != null) playwright.close();
+        if (tlBrowser.get() != null) {
+            tlBrowser.get().close();
+            tlBrowser.remove();
+        }
+        if (tlPlaywright.get() != null) {
+            tlPlaywright.get().close();
+            tlPlaywright.remove();
+        }
     }
 
     public Properties initProp() {
@@ -73,11 +94,9 @@ public class PlaywrightFactory {
 
             if (inputStream != null) {
                 prop.load(inputStream);
-                System.out.println("配置文件加载成功: config.properties");
                 log.info("配置文件加载成功: config.properties");
                 inputStream.close();
             } else {
-                System.out.println("未找到配置文件 config.properties，将使用默认配置");
                 log.warn("未找到配置文件 config.properties，将使用默认配置");
             }
         } catch (Exception e) {

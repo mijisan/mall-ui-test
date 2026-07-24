@@ -28,6 +28,12 @@
             <version>7.10.2</version>
         </dependency>
 
+        <!-- slf4j 对接 log4j2 的桥接器【重中之重，缺少这个slf4j无效】 -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.20.0</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
@@ -47,6 +53,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.5</version>
                 <configuration>
+<!--                    解决日志控制台乱码（已在jvm添加，但似乎没用呢）-->
+                    <argLine>-Dfile.encoding=UTF-8</argLine>
                     <suiteXmlFiles>
 <!--                        <suiteXmlFile>src/test/resources/testrunners/testng_*.xml</suiteXmlFile>-->
                         <suiteXmlFile>src/test/resources/testrunners/testng_regression.xml</suiteXmlFile>
