@@ -54,7 +54,7 @@ public class AllureReportListener implements ITestListener {
         try {
             Path traceDir = Paths.get("target/playwright-traces");
             Files.createDirectories(traceDir);
-            Path tracePath = traceDir.resolve(result.getName() + "-trace.zip");
+            Path tracePath = traceDir.resolve(result.getName() + System.currentTimeMillis() + "-trace.zip");
 
             PlaywrightFactory.getContext().tracing().stop(new Tracing.StopOptions().setPath(tracePath));
 

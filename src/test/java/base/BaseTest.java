@@ -18,7 +18,7 @@ public class BaseTest {
     public void setUp(String browserName) {
         pf = new PlaywrightFactory();
         prop = pf.initProp();
-        if (browserName != null) {
+        if (browserName != null && !browserName.isBlank()) {
             prop.setProperty("browser", browserName);
         }
 //        System.out.println("读取到的内容："+prop.toString());
