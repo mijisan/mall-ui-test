@@ -1,0 +1,7 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","576","验证登录页title正确","商城回归测试 suite","2026-07-25","passed","2026-07-25","tests.LoginPageTest","登录页测试","tests.LoginPageTest","goToLoginPageTest"
+"","818","搜索商品","商城回归测试 suite","2026-07-25","passed","2026-07-25","tests.HomePageTest","主页测试","tests.HomePageTest","searchTest"
+"","1771","验证用户输入正确的邮箱和密码后成功跳转至账户页","商城回归测试 suite","2026-07-25","passed","2026-07-25","tests.LoginPageTest","登录页测试","tests.LoginPageTest","login"
+"","25","验证主页title正确","商城回归测试 suite","2026-07-25","passed","2026-07-25","tests.HomePageTest","主页测试","tests.HomePageTest","titleTest"
+"","507","搜索商品","商城回归测试 suite","2026-07-25","passed","2026-07-25","tests.HomePageTest","主页测试","tests.HomePageTest","searchTest"
+"","509","搜索商品","商城回归测试 suite","2026-07-25","passed","2026-07-25","tests.HomePageTest","主页测试","tests.HomePageTest","searchTest"
