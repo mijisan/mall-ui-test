@@ -1,5 +1,6 @@
 package tests;
 
+import auth.SkipLogin;
 import base.BaseTest;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
@@ -20,6 +21,7 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 @Epic("商城ui测试")
 @Feature("登录页")
 public class LoginPageTest extends BaseTest {
+    @SkipLogin
     @Story("导航至登录页成功")
     @Test(priority = -1, description = "验证登录页title正确")
     void goToLoginPageTest() {
@@ -29,6 +31,7 @@ public class LoginPageTest extends BaseTest {
         assertThat(loginPage.getForgetPwdLink()).isVisible();
     }
 
+    @SkipLogin
     @Story("登录成功")
     @Test(description = "验证用户输入正确的邮箱和密码后成功跳转至账户页")
     void login() {

@@ -41,4 +41,10 @@ public class LoginPage extends BasePage {
         loginBtn.click();
         return new AccountPage(page);
     }
+
+    public void login(String email, String pwd) {
+        addEmail(email);
+        addPwd(pwd);
+        loginBtn.click();
+    }
 }

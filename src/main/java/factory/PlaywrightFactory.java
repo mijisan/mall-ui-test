@@ -57,8 +57,17 @@ public class PlaywrightFactory {
     /**
      * 每个测试方法执行前：创建一个完全隔离的 BrowserContext 和 Page
      */
-    public Page createContextAndPage(String url) {
-        BrowserContext context = tlBrowser.get().newContext();
+    public Page createContextAndPage(String url, boolean useLoginState) {
+        Browser.NewContextOptions contextOptions = new Browser.NewContextOptions();
+        // 如果需要加载登录态，则设置 storageState 路径
+        if (useLoginState) {
+            contextOptions.setStorageStatePath(Paths.get("auth.json"));
+            log.info("加载已保存的登录状态 auth.json");
+        } else {
+            log.info("不加载登录状态，创建干净的上下文");
+        }
+        // 使用配置好的 Options 创建 Context
+        BrowserContext context = tlBrowser.get().newContext(contextOptions);
         // 在创建 Context 后立即开启 Trace 录制
         context.tracing().start(new Tracing.StartOptions()
                 .setScreenshots(true)
@@ -66,6 +75,8 @@ public class PlaywrightFactory {
                 .setSources(true));
         tlBrowserContext.set(context);
         Page page = context.newPage();
+        // 理想情况应该在4s以内
+        page.setDefaultTimeout(5000);
         tlPage.set(page);
 
         if (url != null && !url.isBlank()) {

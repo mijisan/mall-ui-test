@@ -1,5 +1,6 @@
 package tests;
 
+import auth.SkipLogin;
 import base.BaseTest;
 import constants.AppConstants;
 import io.qameta.allure.Epic;
@@ -32,6 +33,7 @@ public class HomePageTest extends BaseTest {
         };
     }
 
+    @SkipLogin
     @Story("搜索商品成功")
     @Test(dataProvider = "getProductData", description = "搜索商品")
     public void searchTest(String productName) {
