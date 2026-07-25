@@ -4,13 +4,13 @@
         <listener class-name="listeners.AllureReportListener"/>
     </listeners>
     <test name = "主页测试" >
-        <parameter name="browser" value="firefox"/>
+        <parameter name="browser" value=""/>
         <classes>
             <class name="tests.HomePageTest"/>
         </classes>
     </test>
     <test name = "登录页测试" >
-        <parameter name="browser" value="chromium"/>
+        <parameter name="browser" value=""/>
         <classes>
             <class name="tests.LoginPageTest"/>
         </classes>
