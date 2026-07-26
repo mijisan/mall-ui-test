@@ -4,15 +4,19 @@ import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.Page;
 import constants.AppConstants;
 import factory.PlaywrightFactory;
+import listeners.AllureReportListener;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pages.HomePage;
 import pages.LoginPage;
 
 import java.nio.file.Paths;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
-@Slf4j
 public class LoginManager {
+    private static final Logger log = LoggerFactory.getLogger(LoginManager.class);
 
     private final PlaywrightFactory pf;
     private final Properties prop;
@@ -47,7 +51,7 @@ public class LoginManager {
         log.info("正在输入账号密码进行认证...");
         loginPage.login(prop.getProperty("username"), prop.getProperty("password"));
         // 确保登录完成再进行下一步，比如等待首页的某个特有元素出现，或者 URL 发生变化
-        page.waitForURL(AppConstants.ACCOUNT_PAGE_URL);
+        page.waitForURL(Pattern.compile(".*" + AppConstants.ACCOUNT_PAGE_URL + ".*"));
     }
 
 }

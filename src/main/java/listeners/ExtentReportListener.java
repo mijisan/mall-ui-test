@@ -5,6 +5,8 @@ import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
@@ -18,8 +20,8 @@ import java.util.Date;
 
 import static factory.PlaywrightFactory.takeScreenshot;
 
-@Slf4j
 public class ExtentReportListener implements ITestListener {
+    private static final Logger log = LoggerFactory.getLogger(ExtentReportListener.class);
 
     private static final String OUTPUT_FOLDER = "./target/build/";
     private static final String FILE_NAME = "TestExecutionReport.html";

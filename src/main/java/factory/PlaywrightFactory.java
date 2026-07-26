@@ -12,8 +12,8 @@ import java.util.Properties;
 public class PlaywrightFactory {
 
     private final Logger log = LoggerFactory.getLogger(PlaywrightFactory.class);
-    private final ThreadLocal<Playwright> tlPlaywright = new ThreadLocal<>();
-    private final ThreadLocal<Browser> tlBrowser = new ThreadLocal<>(); // 全局复用（如果单线程或配合锁）
+    private static final ThreadLocal<Playwright> tlPlaywright = new ThreadLocal<>();
+    private static final ThreadLocal<Browser> tlBrowser = new ThreadLocal<>(); // 全局复用（如果单线程或配合锁）
     private static final ThreadLocal<BrowserContext> tlBrowserContext = new ThreadLocal<>();
     private static final ThreadLocal<Page> tlPage = new ThreadLocal<>();
 

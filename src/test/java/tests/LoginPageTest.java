@@ -7,6 +7,8 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.MouseButton;
 import constants.AppConstants;
+import factory.PlaywrightFactory;
+import io.qameta.allure.Allure;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
@@ -15,6 +17,7 @@ import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import pages.AccountPage;
 import pages.LoginPage;
+import utils.AssertUtils;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
@@ -26,9 +29,8 @@ public class LoginPageTest extends BaseTest {
     @Test(priority = -1, description = "验证登录页title正确")
     void goToLoginPageTest() {
         LoginPage loginPage = homePage.openLoginPage();
-        String title = loginPage.getLoginPageTitle();
-        Assert.assertEquals(title, AppConstants.LOGIN_PAGE_TITLE);
-        assertThat(loginPage.getForgetPwdLink()).isVisible();
+        AssertUtils.assertPageTitle(AppConstants.LOGIN_PAGE_TITLE);
+        AssertUtils.assertVisible(loginPage.getForgetPwdLink(), "忘记密码链接");
     }
 
     @SkipLogin
@@ -39,34 +41,23 @@ public class LoginPageTest extends BaseTest {
         loginPage.addEmail(prop.getProperty("username"));
         loginPage.addPwd(prop.getProperty("password"));
         AccountPage accountPage = loginPage.clickLoginBtn();
-        assertThat(accountPage.getLogoutLink()).isVisible();
+        AssertUtils.assertVisible(accountPage.getLogoutLink(), "登出链接");
     }
 
     @Ignore
     void test2(Page page) {
-        page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Continue")).click();
-        page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("* First Name")).click();
-        page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("* Last Name")).click();
-        page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("* E-Mail")).click();
-        page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("* Telephone")).click();
-        page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("* Password").setExact(true)).click();
-        page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("* Password Confirm")).click();
-        page.getByRole(AriaRole.RADIO, new Page.GetByRoleOptions().setName("Yes")).check();
-        page.getByRole(AriaRole.RADIO, new Page.GetByRoleOptions().setName("No")).check();
-        page.getByRole(AriaRole.RADIO, new Page.GetByRoleOptions().setName("No")).click(new Locator.ClickOptions()
-                .setButton(MouseButton.RIGHT));
-        page.getByRole(AriaRole.RADIO, new Page.GetByRoleOptions().setName("No")).check();
-        page.getByRole(AriaRole.RADIO, new Page.GetByRoleOptions().setName("No")).check();
-        page.getByRole(AriaRole.RADIO, new Page.GetByRoleOptions().setName("No")).check();
-        page.getByRole(AriaRole.CHECKBOX).check();
-        page.getByRole(AriaRole.CHECKBOX).click(new Locator.ClickOptions()
-                .setButton(MouseButton.RIGHT));
-        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Continue")).click();
-        page.getByText("First Name must be between 1").click();
-        page.getByText("Last Name must be between 1").click();
-        page.getByText("E-Mail Address does not").click();
-        page.getByText("Telephone must be between 3").click();
-        page.getByText("Password must be between 4").click();
-        page.getByRole(AriaRole.HEADING, new Page.GetByRoleOptions().setName("Register Account")).click();
+        page.navigate("https://naveenautomationlabs.com/opencart/");
+        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("$ Currency  ")).click();
+        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("€ Euro")).click();
+        assertThat(page.locator("#cart-total")).containsText("0 item(s) - 0.00€");
+        assertThat(page.locator("#content")).containsText("472.33€");
+        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("€ Currency  ")).click();
+        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("$ US Dollar")).click();
+        assertThat(page.locator("#cart-total")).containsText("0 item(s) - $0.00");
+        page.getByRole(AriaRole.LISTITEM).filter(new Locator.FilterOptions().setHasText("123456789")).getByRole(AriaRole.LINK).click();
+        page.getByText("123456789", new Page.GetByTextOptions().setExact(true)).click();
+        page.getByRole(AriaRole.LISTITEM).filter(new Locator.FilterOptions().setHasText("123456789")).click();
+        assertThat(page.locator("h1")).containsText("Contact Us");
+        page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("naveenopencart")).click();
     }
 }
