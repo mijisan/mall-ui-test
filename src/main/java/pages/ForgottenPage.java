@@ -7,11 +7,11 @@ import com.microsoft.playwright.options.AriaRole;
 import lombok.Getter;
 
 @Getter
-public class AccountPage extends BasePage {
+public class ForgottenPage extends BasePage {
 
-    private final Locator logoutLink = page.locator("#column-right").getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Logout"));
+    private final Locator header = page.getByRole(AriaRole.HEADING, new Page.GetByRoleOptions().setName("Forgot Your Password?").setLevel(1));
 
-    public AccountPage(Page page) {
+    public ForgottenPage(Page page) {
         super(page);
     }
 

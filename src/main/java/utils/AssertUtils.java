@@ -51,13 +51,4 @@ public class AssertUtils {
         Assert.assertTrue(isTrue, msg);
     }
 
-    @Step("断言：{3} 的 {1} 属性应该拥有 {2} 属性值")
-    public static void assertHasAttr(Locator locator, String attrName, String value, String elementName) {
-        assertThat(locator).hasAttribute(attrName, value);
-    }
-
-    @Step("断言：{3} 的 {1} 属性不应该拥有 {2} 属性值")
-    public static void assertNotHasAttr(Locator locator, String attrName, String value, String elementName) {
-        assertThat(locator).not().hasAttribute(attrName, value);
-    }
 }

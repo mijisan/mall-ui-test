@@ -1,10 +1,15 @@
 package factory;
 
 import com.microsoft.playwright.*;
+import com.microsoft.playwright.options.WaitUntilState;
+import io.qameta.allure.Allure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Properties;
@@ -77,10 +82,12 @@ public class PlaywrightFactory {
         Page page = context.newPage();
         // 理想情况应该在4s以内
         page.setDefaultTimeout(5000);
+        page.setDefaultNavigationTimeout(60000);
         tlPage.set(page);
 
         if (url != null && !url.isBlank()) {
-            page.navigate(url.trim());
+            page.navigate(url.trim(), new Page.NavigateOptions()
+                    .setWaitUntil(WaitUntilState.DOMCONTENTLOADED));
         }
         return page;
     }
@@ -134,5 +141,29 @@ public class PlaywrightFactory {
                 .setPath(Paths.get(path))
                 .setFullPage(true));
         return Base64.getEncoder().encodeToString(buffer);
+    }
+
+    public void saveScreenshot(Page page){
+        if(page == null) return;
+        byte[] bytes = page.screenshot(new Page.ScreenshotOptions().setFullPage(true));
+        Allure.addAttachment("失败截图", "image/png", new ByteArrayInputStream(bytes), ".png");
+        log.info("失败截图添加成功");
+    }
+
+    public void saveTrace(BrowserContext context, String testName){
+        if (context != null) {
+            try {
+                Path traceDir = Paths.get("target/playwright-traces");
+                Files.createDirectories(traceDir);
+                Path tracePath = traceDir.resolve(testName + System.currentTimeMillis() + "-trace.zip");
+                context.tracing().stop(new Tracing.StopOptions().setPath(tracePath));
+                try(InputStream is = Files.newInputStream(tracePath)){
+                    Allure.addAttachment("Playwright Trace 追踪文件", "application/zip", is, ".zip");
+                    log.info("Trace附件添加成功");
+                }
+            } catch (Exception e) {
+                log.error("未能保存追踪文件：{}", e.getMessage());
+            }
+        }
     }
 }

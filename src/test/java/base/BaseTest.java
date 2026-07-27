@@ -58,10 +58,25 @@ public class BaseTest {
     @AfterMethod
     public void tearDownMethod(ITestResult result) {
         BrowserContext context = (BrowserContext) result.getAttribute("context");
-        if (context != null) {
-            try {
-                context.tracing().stop();
-            }catch (Exception ignore) {}
+        Page page = (Page) result.getAttribute("page");
+        // 失败保存截图和 trace
+        if (ITestResult.FAILURE == result.getStatus() || result.getStatus() == ITestResult.SUCCESS_PERCENTAGE_FAILURE) {
+            Throwable throwable = result.getThrowable();
+            if(throwable instanceof AssertionError){
+                log.error("【断言失败】{}", result.getName());
+            }else{
+                log.error("【程序异常(broken)】{}", result.getName(), throwable);
+            }
+
+            pf.saveScreenshot(page);
+            pf.saveTrace(context, result.getName());
+        } else {
+            // 关闭 trace
+            if (context != null) {
+                try {
+                    context.tracing().stop();
+                }catch (Exception ignore) {}
+            }
         }
         // 每个用例结束后，销毁当前的 Page 和 Context
         pf.closeContextAndPage();

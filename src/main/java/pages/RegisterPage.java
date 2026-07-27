@@ -7,12 +7,10 @@ import com.microsoft.playwright.options.AriaRole;
 import lombok.Getter;
 
 @Getter
-public class AccountPage extends BasePage {
+public class RegisterPage extends BasePage {
+    private final Locator header = page.getByRole(AriaRole.HEADING, new Page.GetByRoleOptions().setName("Register Account").setLevel(1));;
 
-    private final Locator logoutLink = page.locator("#column-right").getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Logout"));
-
-    public AccountPage(Page page) {
+    public RegisterPage(Page page) {
         super(page);
     }
-
 }

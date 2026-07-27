@@ -35,9 +35,9 @@
         </Root>
 
         <!-- 单独控制playwright包日志：DEBUG，只打印控制台，不进日志文件 -->
-        <Logger name="com.microsoft.playwright" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger>
+<!--        <Logger name="com.microsoft.playwright" level="DEBUG" additivity="false">-->
+<!--            <AppenderRef ref="Console"/>-->
+<!--        </Logger>-->
         <!-- 屏蔽Playwright冗余日志，可选 -->
 <!--        <Logger name="com.microsoft.playwright" level="WARN" additivity="false">-->
 <!--            <AppenderRef ref="Console"/>-->

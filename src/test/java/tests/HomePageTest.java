@@ -2,16 +2,16 @@ package tests;
 
 import auth.SkipLogin;
 import base.BaseTest;
+import com.microsoft.playwright.assertions.PlaywrightAssertions;
 import constants.AppConstants;
-import factory.PlaywrightFactory;
-import io.qameta.allure.Allure;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Step;
 import io.qameta.allure.Story;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import pages.HomePage;
+import pages.ProductPage;
 import pages.SearchPage;
 import utils.AssertUtils;
 
@@ -21,7 +21,7 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 @Feature("主页")
 public class HomePageTest extends BaseTest {
 
-    private String secondImgSrc;
+    private String second;
 
     @Story("成功导航至主页")
     @Test(priority = -1, description = "验证主页title正确")
@@ -93,9 +93,9 @@ public class HomePageTest extends BaseTest {
         AssertUtils.assertContainsText(homePage.getCartDropdown(), "Your shopping cart is empty", "空购物车提示");
         homePage.clickMiniCartBtn();
 
-        homePage.clickFirstProductAddToCartBtn();
-        AssertUtils.assertVisible(homePage.getSuccessAlert(), "成功提示条");
-        AssertUtils.assertContainsText(homePage.getSuccessAlert(), "Success: You have added", "成功提示条");
+        homePage.clickAddToCartBtn();
+        AssertUtils.assertVisible(homePage.getAlertMessage(), "成功提示条");
+        AssertUtils.assertContainsText(homePage.getAlertMessage(), "Success: You have added", "成功提示条");
 
         AssertUtils.assertContainsText(homePage.getCartTotalText(), "1 item(s) - $602.00", "迷你购物车文本");
         homePage.clickMiniCartBtn();
@@ -105,22 +105,58 @@ public class HomePageTest extends BaseTest {
 
     @SkipLogin
     @Story("轮播图区域")
-    @Test(priority = 1, description = "测试轮播图：箭头切换")
+    @Test(priority = -1, description = "测试轮播图：箭头切换")
     void testHeroBannerCarousel() {
         AssertUtils.assertVisible(homePage.getCarousel(), "轮播图");
-        String initialImgSrc = homePage.getActiveImgSrc();
+
+        String first = homePage.getActiveImgSrc();
         homePage.clickNextArrow();
-        AssertUtils.assertNotHasAttr(homePage.getActiveBannerImg(), "src", initialImgSrc, "当前激活图片");
-        secondImgSrc = homePage.getActiveImgSrc();
+        assertThat(homePage.getActiveBannerImg()).not().hasAttribute("src", first);
+        second = homePage.getActiveImgSrc();
+        Assert.assertNotEquals(second, first);
         homePage.clickPrevArrow();
-        AssertUtils.assertHasAttr(homePage.getActiveBannerImg(), "src", initialImgSrc, "当前激活图片");
+        Assert.assertEquals(homePage.getActiveImgSrc(), first);
     }
 
     @Story("轮播图区域")
-    @Test(priority = 2, description = "测试轮播图：底部分页圆")
+    @Test(description = "测试轮播图：底部分页圆")
     void testHeroBannerCarousel2() {
         AssertUtils.assertTrue(homePage.getDotsCount() >= 2, "轮播图至少有 2 个小圆点可以点击");
         homePage.clickDot(1);
-        AssertUtils.assertHasAttr(homePage.getActiveBannerImg(), "src", secondImgSrc, "当前激活图片");
+        assertThat(homePage.getActiveBannerImg()).hasAttribute("src", second);
+    }
+
+    @Test(description = "验证 Banner 链接跳转")
+    void testClickBannerNOpenProductPage() {
+        ProductPage productPage = homePage.clickBannerLink();
+        AssertUtils.assertVisible(productPage.getHeader(), "商品详情页标题");
+    }
+
+    @Story("推荐商品区域")
+    @Test(description = "首页商品交互按钮：加入收藏夹-未登录")
+    @SkipLogin
+    void testProductAddToWishListBtn() {
+        homePage.clickAddToWishListBtn();
+        AssertUtils.assertVisible(homePage.getAlertMessage(), "提示框");
+        AssertUtils.assertContainsText(homePage.getAlertMessage(), "You must login", "提示框");
+    }
+
+    @Story("推荐商品区域")
+    @Test(description = "首页商品交互按钮：加入对比-未登录")
+    @SkipLogin
+    void testProductCompareBtn() {
+        homePage.clickCompareBtn();
+        AssertUtils.assertVisible(homePage.getAlertMessage(), "提示框");
+        AssertUtils.assertContainsText(homePage.getAlertMessage(), "Success: You have added MacBook to your product comparison!", "提示框");
+    }
+
+    @Story("推荐商品区域")
+    @Test(description = "首页商品交互按钮：加入购物车-未登录")
+    @SkipLogin
+    void testProductAddToCartBtn() {
+        homePage.clickAddToCartBtn();
+        AssertUtils.assertVisible(homePage.getAlertMessage(), "提示框");
+        AssertUtils.assertContainsText(homePage.getAlertMessage(), "Success: You have added MacBook to your shopping cart!", "提示框");
+        AssertUtils.assertContainsText(homePage.getCartTotalText(), "1 item(s) - $602.00", "迷你购物车");
     }
 }
