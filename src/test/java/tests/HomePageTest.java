@@ -129,7 +129,7 @@ public class HomePageTest extends BaseTest {
     @Test(description = "验证 Banner 链接跳转")
     void testClickBannerNOpenProductPage() {
         ProductPage productPage = homePage.clickBannerLink();
-        AssertUtils.assertVisible(productPage.getHeader(), "商品详情页标题");
+        AssertUtils.assertVisible(productPage.getProductHeading("Samsung Galaxy Tab 10.1"), "商品详情页标题");
     }
 
     @Story("推荐商品区域")

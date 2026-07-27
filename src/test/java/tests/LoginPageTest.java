@@ -102,7 +102,7 @@ public class LoginPageTest extends BaseTest {
 
     @Story("状态安全")
     @Test(description = "已登录状态防重复登录")
-    void testRegisterLink2() {
+    void testDuplicateLogins() {
         homePage.navigateLoginPage();
         AssertUtils.assertPageTitle(AppConstants.ACCOUNT_PAGE_TITLE);
     }

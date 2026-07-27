@@ -131,4 +131,8 @@ public class HomePage extends BasePage {
         page.navigate(AppConstants.LOGIN_PAGE_URL);
     }
 
+    public ProductPage clickProductLink(String productName) {
+        page.getByTitle(productName).click();
+        return new ProductPage(page);
+    }
 }

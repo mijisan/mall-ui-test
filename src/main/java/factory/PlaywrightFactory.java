@@ -145,9 +145,14 @@ public class PlaywrightFactory {
 
     public void saveScreenshot(Page page){
         if(page == null) return;
-        byte[] bytes = page.screenshot(new Page.ScreenshotOptions().setFullPage(true));
-        Allure.addAttachment("失败截图", "image/png", new ByteArrayInputStream(bytes), ".png");
-        log.info("失败截图添加成功");
+        try {
+            byte[] bytes = page.screenshot(new Page.ScreenshotOptions().setFullPage(true));
+            Allure.addAttachment("失败截图", "image/png", new ByteArrayInputStream(bytes), ".png");
+            log.info("失败截图添加成功");
+        } catch (Exception e) {
+            log.error("截图失败", e);
+        }
+
     }
 
     public void saveTrace(BrowserContext context, String testName){

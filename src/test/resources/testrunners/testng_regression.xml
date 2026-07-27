@@ -15,4 +15,10 @@
             <class name="tests.LoginPageTest"/>
         </classes>
     </test>
+    <test name = "商品详情页测试" >
+        <parameter name="browser" value=""/>
+        <classes>
+            <class name="tests.ProductPageTest"/>
+        </classes>
+    </test>
 </suite>
