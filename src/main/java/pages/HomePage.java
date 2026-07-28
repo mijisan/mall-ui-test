@@ -14,6 +14,7 @@ public class HomePage extends BasePage {
     private final Locator searchBtn = page.locator("#search").getByRole(AriaRole.BUTTON);
     private final Locator myAccountLink = page.locator("span").getByText("My Account");
     private final Locator loginLink = page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Login"));
+    private final Locator registerLink = page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Register"));;
     private final Locator currencyBtn = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Currency"));
     private final Locator euroBtn = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Euro"));
 
@@ -55,6 +56,13 @@ public class HomePage extends BasePage {
         myAccountLink.click();
         loginLink.click();
         return new LoginPage(page);
+    }
+
+    @Step("打开注册页面")
+    public RegisterPage openRegisterPage() {
+        myAccountLink.click();
+        registerLink.click();
+        return new RegisterPage(page);
     }
 
     @Step("点击货币切换按钮")

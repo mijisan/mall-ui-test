@@ -21,4 +21,10 @@
             <class name="tests.ProductPageTest"/>
         </classes>
     </test>
+    <test name = "注册页测试" >
+        <parameter name="browser" value=""/>
+        <classes>
+            <class name="tests.RegisterPageTest"/>
+        </classes>
+    </test>
 </suite>
