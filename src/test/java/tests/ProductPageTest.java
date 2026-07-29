@@ -32,7 +32,8 @@ public class ProductPageTest extends BaseTest {
     @Test(description = "核心信息展示")
     public void testCoreInfoDisplay() {
         ProductPage productPage = homePage.clickProductLink(prop.getProperty("productName"));
-        AssertUtils.assertVisible(productPage.getProductHeading(prop.getProperty("productName")), "标题");
+        AssertUtils.assertVisible(productPage.getHeader(), "商品页标题");
+        AssertUtils.assertContainsText(productPage.getHeader(), prop.getProperty("productName"), "商品页标题");
         AssertUtils.assertContainsText(productPage.getBrand(prop.getProperty("brand")), prop.getProperty("brand"), "品牌信息");
         AssertUtils.assertVisible(productPage.getPrice(), "商品价格");
     }
@@ -79,7 +80,7 @@ public class ProductPageTest extends BaseTest {
         productPage.clickAdd2CartBtn();
         AssertUtils.assertVisible(productPage.getAlertMeg(), "提示框");
         AssertUtils.assertContainsText(productPage.getAlertMeg(), "Success: You have added MacBook to your shopping cart!", "提示框");
-        AssertUtils.assertContainsText(homePage.getCartTotalText(), "1 item(s) - $602.00", "迷你购物车");
+        AssertUtils.assertContainsText(commonComponent.getCartTotalText(), "1 item(s) - $602.00", "迷你购物车");
     }
 
     @Story("购物车")
@@ -90,7 +91,7 @@ public class ProductPageTest extends BaseTest {
         productPage.addQty("0");
         productPage.clickAdd2CartBtn();
         AssertUtils.assertVisible(productPage.getAlertMeg(), "提示框");
-        AssertUtils.assertContainsText(homePage.getCartTotalText(), "0 item(s) - $0.00", "迷你购物车");
+        AssertUtils.assertContainsText(commonComponent.getCartTotalText(), "0 item(s) - $0.00", "迷你购物车");
     }
 
     @Story("商品评价")

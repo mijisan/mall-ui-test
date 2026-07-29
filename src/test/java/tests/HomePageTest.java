@@ -2,11 +2,9 @@ package tests;
 
 import auth.SkipLogin;
 import base.BaseTest;
-import com.microsoft.playwright.assertions.PlaywrightAssertions;
 import constants.AppConstants;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
-import io.qameta.allure.Step;
 import io.qameta.allure.Story;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
@@ -42,8 +40,8 @@ public class HomePageTest extends BaseTest {
     @Story("全局搜索框")
     @Test(dataProvider = "getProductData", description = "搜索存在商品")
     public void searchExistProductTest(String productName) {
-        homePage.addProduct(productName);
-        SearchPage searchPage = homePage.clickSearchBtn();
+        commonComponent.addProduct(productName);
+        SearchPage searchPage = commonComponent.clickSearchBtn();
         AssertUtils.assertContainsText(searchPage.getHeader(), "Search - "+productName, "搜索页标题");
     }
 
@@ -51,8 +49,8 @@ public class HomePageTest extends BaseTest {
     @Story("全局搜索框")
     @Test( description = "搜索不存在商品")
     public void searchNotExistProductTest() {
-        homePage.addProduct("小米手机");
-        SearchPage searchPage = homePage.clickSearchBtn();
+        commonComponent.addProduct("小米手机");
+        SearchPage searchPage = commonComponent.clickSearchBtn();
         AssertUtils.assertContainsText(searchPage.getNotExistMeg(), "There is no product", "提示");
     }
 
@@ -60,7 +58,7 @@ public class HomePageTest extends BaseTest {
     @Story("全局搜索框")
     @Test( description = "直接点击搜索")
     public void searchTest() {
-        SearchPage searchPage = homePage.clickSearchBtn();
+        SearchPage searchPage = commonComponent.clickSearchBtn();
         AssertUtils.assertContainsText(searchPage.getHeader(), "Search", "标题");
     }
 
@@ -68,16 +66,16 @@ public class HomePageTest extends BaseTest {
     @SkipLogin
     @Test(description = "点击货币下拉菜单，选择欧元")
     public void switchCurrencyTest() {
-        homePage.clickCurrencyBtn();
-        homePage.clickEuroBtn();
-        AssertUtils.assertContainsText(homePage.getCartButton(), "0 item(s) - 0.00€", "迷你购物车");
+        commonComponent.clickCurrencyBtn();
+        commonComponent.clickEuroBtn();
+        AssertUtils.assertContainsText(commonComponent.getCartButton(), "0 item(s) - 0.00€", "迷你购物车");
     }
 
     @Story("LOGO")
     @SkipLogin
     @Test(description = "打开搜索页，点击左侧LOGO，正确返回首页")
     public void logoTest() {
-        SearchPage searchPage = homePage.clickSearchBtn();
+        SearchPage searchPage = commonComponent.clickSearchBtn();
         searchPage.clickLogo();
         AssertUtils.assertPageTitle(AppConstants.HOME_PAGE_TITLE);
     }
@@ -86,20 +84,20 @@ public class HomePageTest extends BaseTest {
     @SkipLogin
     @Test(description = "测试迷你购物车：初始状态、展开浮层及动态更新")
     public void miniCartTest() {
-        AssertUtils.assertContainsText(homePage.getCartTotalText(), "0.00", "迷你购物车文本初始状态");
+        AssertUtils.assertContainsText(commonComponent.getCartTotalText(), "0.00", "迷你购物车文本初始状态");
 
-        homePage.clickMiniCartBtn();
-        AssertUtils.assertVisible(homePage.getCartDropdown(), "购物车浮层");
-        AssertUtils.assertContainsText(homePage.getCartDropdown(), "Your shopping cart is empty", "空购物车提示");
-        homePage.clickMiniCartBtn();
+        commonComponent.clickMiniCartBtn();
+        AssertUtils.assertVisible(commonComponent.getCartDropdown(), "购物车浮层");
+        AssertUtils.assertContainsText(commonComponent.getCartDropdown(), "Your shopping cart is empty", "空购物车提示");
+        commonComponent.clickMiniCartBtn();
 
         homePage.clickAddToCartBtn();
         AssertUtils.assertVisible(homePage.getAlertMessage(), "成功提示条");
         AssertUtils.assertContainsText(homePage.getAlertMessage(), "Success: You have added", "成功提示条");
 
-        AssertUtils.assertContainsText(homePage.getCartTotalText(), "1 item(s) - $602.00", "迷你购物车文本");
-        homePage.clickMiniCartBtn();
-        AssertUtils.assertContainsText(homePage.getCartDropdown(), "MacBook", "浮层内商品明细");
+        AssertUtils.assertContainsText(commonComponent.getCartTotalText(), "1 item(s) - $602.00", "迷你购物车文本");
+        commonComponent.clickMiniCartBtn();
+        AssertUtils.assertContainsText(commonComponent.getCartDropdown(), "MacBook", "浮层内商品明细");
 
     }
 
@@ -126,6 +124,7 @@ public class HomePageTest extends BaseTest {
         assertThat(homePage.getActiveBannerImg()).hasAttribute("src", second);
     }
 
+    @Story("轮播图区域")
     @Test(description = "验证 Banner 链接跳转")
     void testClickBannerNOpenProductPage() {
         ProductPage productPage = homePage.clickBannerLink();
@@ -157,6 +156,6 @@ public class HomePageTest extends BaseTest {
         homePage.clickAddToCartBtn();
         AssertUtils.assertVisible(homePage.getAlertMessage(), "提示框");
         AssertUtils.assertContainsText(homePage.getAlertMessage(), "Success: You have added MacBook to your shopping cart!", "提示框");
-        AssertUtils.assertContainsText(homePage.getCartTotalText(), "1 item(s) - $602.00", "迷你购物车");
+        AssertUtils.assertContainsText(commonComponent.getCartTotalText(), "1 item(s) - $602.00", "迷你购物车");
     }
 }

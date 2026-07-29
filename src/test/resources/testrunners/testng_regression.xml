@@ -1,5 +1,5 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="商城回归测试 suite" thread-count="2" parallel="tests" verbose="2" >
+<suite name="商城回归测试 suite" thread-count="3" parallel="tests" verbose="2" >
     <listeners>
         <listener class-name="listeners.AllureReportListener"/>
     </listeners>
@@ -22,9 +22,13 @@
         </classes>
     </test>
     <test name = "注册页测试" >
-        <parameter name="browser" value=""/>
         <classes>
             <class name="tests.RegisterPageTest"/>
+        </classes>
+    </test>
+    <test name = "购物流程测试" >
+        <classes>
+            <class name="tests.E2ETest"/>
         </classes>
     </test>
 </suite>

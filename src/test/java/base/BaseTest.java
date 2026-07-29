@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
+import pages.CommonComponent;
 import pages.HomePage;
 
 import java.lang.reflect.Method;
@@ -20,6 +21,7 @@ public class BaseTest {
     protected PlaywrightFactory pf;
     protected Properties prop;
 
+    protected CommonComponent commonComponent;
     protected HomePage homePage;
 
     @BeforeSuite
@@ -49,6 +51,7 @@ public class BaseTest {
         log.info("当前执行用例: {} | 是否加载登录态: {}", method.getName(), useLoginState);
         // 每个用例开始前，创建一个全新的 Context/Page 并导航到目标 URL，实现极速隔离
         Page page = pf.createContextAndPage(prop.getProperty("url"), useLoginState);
+        commonComponent = new CommonComponent(page);
         homePage = new HomePage(page);
         //将page、context存入result，监听器可以安全获取
         result.setAttribute("page", page);

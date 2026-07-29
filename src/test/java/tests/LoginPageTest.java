@@ -31,7 +31,7 @@ public class LoginPageTest extends BaseTest {
     @Story("导航至登录页成功")
     @Test(priority = -1, description = "验证登录页title正确")
     void goToLoginPageTest() {
-        LoginPage loginPage = homePage.openLoginPage();
+        LoginPage loginPage = commonComponent.openLoginPage();
         AssertUtils.assertPageTitle(AppConstants.LOGIN_PAGE_TITLE);
         AssertUtils.assertVisible(loginPage.getForgetPwdLink(), "忘记密码链接");
     }
@@ -40,7 +40,7 @@ public class LoginPageTest extends BaseTest {
     @Story("登录")
     @Test(description = "验证用户输入正确的邮箱和密码后成功跳转至账户页")
     void login() {
-        LoginPage loginPage = homePage.openLoginPage();
+        LoginPage loginPage = commonComponent.openLoginPage();
         loginPage.addEmail(prop.getProperty("username"));
         loginPage.addPwd(prop.getProperty("password"));
         AccountPage accountPage = loginPage.clickLoginBtn();
@@ -49,18 +49,25 @@ public class LoginPageTest extends BaseTest {
 
     @DataProvider
     public Object[][] getLoginData() {
+        String relEmail = prop.getProperty("username");
+        String email = System.currentTimeMillis() + prop.getProperty("username");
+        String pwd = prop.getProperty("password");
+
         return new Object[][] {
-                {"dudulu1@mail.com", "123456"},
-                {"dudulu@mail.com", "12345"},
-                {"", ""}
+                {email, pwd, "未注册邮箱"},
+                {relEmail, "12345", "错误密码"},
+                {"", "", "空值提交"}
         };
     }
 
     @SkipLogin
     @Story("登录")
-    @Test(dataProvider = "getLoginData", description = "未注册邮箱、错误密码、空值提交")
-    void loginFailed(String username, String pwd) {
-        LoginPage loginPage = homePage.openLoginPage();
+    @Test(dataProvider = "getLoginData")
+    void loginFailed(String username, String pwd, String caseName) {
+        Allure.getLifecycle().updateTestCase(result -> {
+            result.setName(caseName);
+        });
+        LoginPage loginPage = commonComponent.openLoginPage();
         loginPage.addEmail(username);
         loginPage.addPwd(pwd);
         loginPage.clickLoginBtnWithWrongData();
@@ -73,7 +80,7 @@ public class LoginPageTest extends BaseTest {
     @SkipLogin
     @Test(description = "注册入口跳转")
     void testRegisterBtn() {
-        LoginPage loginPage = homePage.openLoginPage();
+        LoginPage loginPage = commonComponent.openLoginPage();
         AssertUtils.assertVisible(loginPage.getRegisterBtn(), "注册跳转按钮");
         RegisterPage registerPage = loginPage.clickRegisterBtn();
         AssertUtils.assertPageTitle(AppConstants.REGISTER_PAGE_TITLE);
@@ -84,7 +91,7 @@ public class LoginPageTest extends BaseTest {
     @SkipLogin
     @Test(description = "忘记密码跳转")
     void testForgottenPasswordLink() {
-        LoginPage loginPage = homePage.openLoginPage();
+        LoginPage loginPage = commonComponent.openLoginPage();
         AssertUtils.assertVisible(loginPage.getForgetPwdLink(), "忘记密码链接");
         ForgottenPage forgottenPage = loginPage.clickForgetPwdLink();
         AssertUtils.assertPageTitle(AppConstants.FORGETTEN_PAGE_TITLE);
@@ -95,7 +102,7 @@ public class LoginPageTest extends BaseTest {
     @SkipLogin
     @Test(description = "未登录状态访问受限页面")
     void testAccessRestrictedPage() {
-        LoginPage loginPage = homePage.openLoginPage();
+        LoginPage loginPage = commonComponent.openLoginPage();
         loginPage.clickMyAccountLink();
         AssertUtils.assertPageTitle(AppConstants.LOGIN_PAGE_TITLE);
     }

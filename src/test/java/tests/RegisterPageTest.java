@@ -3,6 +3,7 @@ package tests;
 import auth.SkipLogin;
 import base.BaseTest;
 import constants.AppConstants;
+import factory.PlaywrightFactory;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
@@ -21,7 +22,7 @@ public class RegisterPageTest extends BaseTest {
     @Story("导航至注册页")
     @Test(priority = -1, description = "验证注册页title正确")
     void goToLoginPageTest() {
-        RegisterPage registerPage = homePage.openRegisterPage();
+        RegisterPage registerPage = commonComponent.openRegisterPage();
         AssertUtils.assertPageTitle(AppConstants.REGISTER_PAGE_TITLE);
         AssertUtils.assertVisible(registerPage.getHeader(), "注册页标题");
     }
@@ -62,7 +63,7 @@ public class RegisterPageTest extends BaseTest {
             result.setName(caseName);
         });
 
-        RegisterPage registerPage = homePage.openRegisterPage();
+        RegisterPage registerPage = commonComponent.openRegisterPage();
 
         // 1. 填充表单数据
         registerPage.addFirstName(firstName);
@@ -92,7 +93,7 @@ public class RegisterPageTest extends BaseTest {
     @Test(description = "用户使用正确信息注册")
     public void testRegister() {
 
-        RegisterPage registerPage = homePage.openRegisterPage();
+        RegisterPage registerPage = commonComponent.openRegisterPage();
 
         registerPage.addFirstName(prop.getProperty("firstname"));
         registerPage.addLastName(prop.getProperty("lastname"));
@@ -103,7 +104,9 @@ public class RegisterPageTest extends BaseTest {
         registerPage.checkAgreePolicy();
         SuccessPage successPage = registerPage.clickBtnNOpenSuccessPage();
 
-        AssertUtils.assertPageTitle(AppConstants.SUCCESS_PAGE_TITLE);
+        AssertUtils.assertPageTitle(AppConstants.REGISTER_SUCCESS_PAGE_TITLE);
         AssertUtils.assertVisible(successPage.getHeading(), "成功注册页标题");
+        AssertUtils.assertContainsText(successPage.getHeading(), "Your Account Has Been Created!", "成功注册页标题");
+//        PlaywrightFactory.getPage().pause();
     }
 }

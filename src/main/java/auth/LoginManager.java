@@ -8,6 +8,7 @@ import listeners.AllureReportListener;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pages.CommonComponent;
 import pages.HomePage;
 import pages.LoginPage;
 
@@ -46,8 +47,8 @@ public class LoginManager {
      * 登录步骤
      */
     private void loginSteps(Page page) {
-        HomePage homePage = new HomePage(page);
-        LoginPage loginPage = homePage.openLoginPage();
+        CommonComponent commonComponent = new CommonComponent(page);
+        LoginPage loginPage = commonComponent.openLoginPage();
         log.info("正在输入账号密码进行认证...");
         loginPage.login(prop.getProperty("username"), prop.getProperty("password"));
         // 确保登录完成再进行下一步，比如等待首页的某个特有元素出现，或者 URL 发生变化

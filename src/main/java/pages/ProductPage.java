@@ -10,7 +10,8 @@ import lombok.Getter;
 @Getter
 public class ProductPage extends BasePage {
 
-    Locator price = page.getByRole(AriaRole.HEADING, new Page.GetByRoleOptions().setName("$602.00").setLevel(2));
+    Locator header = page.locator("h1");
+    Locator price = page.locator("h2:has-text('$')");
     Locator qtyBox = page.getByLabel("Qty");
     Locator add2CartBtn = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Add to Cart"));
     Locator add2WishListBtn = page.locator("button[data-original-title='Add to Wish List']");
