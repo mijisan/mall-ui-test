@@ -14,7 +14,7 @@ public class CommonComponent extends BasePage {
     private final Locator euroBtn = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Euro"));
     private final Locator myAccountLink = page.locator("span").getByText("My Account");
     private final Locator loginLink = page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Login"));
-    private final Locator registerLink = page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Register"));;
+    private final Locator registerLink = page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Register"));
 
     private final Locator searchInput = page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Search"));
     private final Locator searchBtn = page.locator("#search").getByRole(AriaRole.BUTTON);

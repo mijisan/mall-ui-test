@@ -3,10 +3,13 @@ package pages;
 import base.BasePage;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Response;
 import com.microsoft.playwright.options.AriaRole;
 import io.qameta.allure.Step;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Getter
 public class ProductPage extends BasePage {
 
@@ -55,7 +58,17 @@ public class ProductPage extends BasePage {
 
     @Step("点击加入购物车按钮")
     public void clickAdd2CartBtn() {
-        add2CartBtn.click();
+        long start = System.currentTimeMillis();
+        Response response = page.waitForResponse(
+                r -> r.url().contains("checkout/cart/add"),
+                () -> add2CartBtn.click()
+        );
+        log.info("Add to Cart接口耗时：{}", System.currentTimeMillis() - start);
+        log.info("status={}", response.status());
+        log.info("body={}", response.text());
+        log.info("DOM中alert数量={}", page.locator(".alert").count());
+        log.info("URL={}", page.url());
+//        add2CartBtn.click();
     }
 
     @Step("点击加入收藏夹")

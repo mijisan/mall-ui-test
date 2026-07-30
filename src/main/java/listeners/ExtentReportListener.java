@@ -4,9 +4,8 @@ import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
+import com.microsoft.playwright.Page;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
@@ -18,10 +17,10 @@ import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Date;
 
-import static factory.PlaywrightFactory.takeScreenshot;
+import static utils.ScreenshotUtil.takeScreenshot;
 
+@Slf4j
 public class ExtentReportListener implements ITestListener {
-    private static final Logger log = LoggerFactory.getLogger(ExtentReportListener.class);
 
     private static final String OUTPUT_FOLDER = "./target/build/";
     private static final String FILE_NAME = "TestExecutionReport.html";
@@ -65,12 +64,12 @@ public class ExtentReportListener implements ITestListener {
 
     @Override
     public synchronized void onStart(ITestContext context) {
-        log.info("测试套件开始: {}", context.getName());
+        log.info("Test开始: {}", context.getName());
     }
 
     @Override
     public synchronized void onFinish(ITestContext context) {
-        log.info("测试套件结束: {}", context.getName());
+        log.info("Test结束: {}", context.getName());
         extentReports.flush();
         extentTestThreadLocal.remove();
     }
@@ -121,13 +120,22 @@ public class ExtentReportListener implements ITestListener {
         if (test == null) return;
 
         try {
-            String base64Screenshot = takeScreenshot();
-            var media = MediaEntityBuilder.createScreenCaptureFromBase64String(base64Screenshot, result.getMethod().getMethodName()).build();
+            Page page = (Page) result.getAttribute("page");
+            String base64Screenshot = page != null ? takeScreenshot(page) : null;
+            if (base64Screenshot != null) {
+                var media = MediaEntityBuilder.createScreenCaptureFromBase64String(base64Screenshot, result.getMethod().getMethodName()).build();
 
-            if (details instanceof Throwable throwable) {
-                test.fail(throwable, media);
+                if (details instanceof Throwable throwable) {
+                    test.fail(throwable, media);
+                } else {
+                    test.pass(String.valueOf(details), media);
+                }
             } else {
-                test.pass(String.valueOf(details), media);
+                if (details instanceof Throwable throwable) {
+                    test.fail(throwable);
+                } else {
+                    test.pass(String.valueOf(details));
+                }
             }
         } catch (Exception e) {
             log.error("未能附加测试截图：{}", result.getMethod().getMethodName(), e);

@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Flaky Test">
+    <test name = "购物流程测试" >
+        <classes>
+            <class name="tests.E2ETest"/>
+        </classes>
+    </test>
+</suite>

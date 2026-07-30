@@ -47,7 +47,7 @@ public class HomePage extends BasePage {
     public void clickNextArrow() {
         carousel.hover();
         nextArrow.first().click();
-        page.waitForTimeout(500);   // 后续可替换为更智能的等待
+        page.waitForTimeout(500);   // 后续可替换为更智能的等待, 替换为基于条件的智能等待，如等待 swiper-slide-active class 变化。
 
     }
 

@@ -14,6 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <aspectj.version>1.9.25.1</aspectj.version>
         <allure.version>2.35.1</allure.version>
+        <suiteXmlFile>src/test/resources/testrunners/testng_regression.xml</suiteXmlFile>
     </properties>
 
     <dependencies>
@@ -80,10 +81,10 @@
                         -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
                     </argLine>
                     <suiteXmlFiles>
-<!--                        <suiteXmlFile>src/test/resources/testrunners/testng_*.xml</suiteXmlFile>-->
-                        <suiteXmlFile>src/test/resources/testrunners/testng_regression.xml</suiteXmlFile>
+                        <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
+<!--                        <suiteXmlFile>src/test/resources/testrunners/testng_regression.xml</suiteXmlFile>-->
 <!--                        <suiteXmlFile>src/test/resources/testrunners/testng_smoke.xml</suiteXmlFile>-->
-                        //该文件位于工程根目录时，直接填写名字，其它位置要加上路径。
+<!--                        //该文件位于工程根目录时，直接填写名字，其它位置要加上路径。-->
                     </suiteXmlFiles>
                 </configuration>
                 <dependencies>

@@ -22,7 +22,6 @@ public class CheckoutPage extends BasePage {
     Locator agreeField = page.getByRole(AriaRole.CHECKBOX);
     Locator productRow = page.locator("table.table-bordered.table-hover tbody tr").first();
     Locator confirmOrderTable = page.getByRole(AriaRole.TABLE);
-    Locator productNameCell = page.getByRole(AriaRole.CELL, new Page.GetByRoleOptions().setName("iPod Touch"));
     Locator confirmBtn = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Confirm Order"));
 
     public CheckoutPage(Page page) {

@@ -21,14 +21,17 @@ jobs:
         run: mvn -B install -D skipTests --no-transfer-progress
       # 缓存Playwright浏览器二进制，加速后续构建
       - name: Cache Playwright binaries
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-pw-cache
+          key: ${{ runner.os }}-pw-1.60.0
       - name: Ensure browsers are installed
         run: mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install chromium --with-deps"
       - name: Run tests
-        run: mvn test -Dheadless=true
+#        env:
+#          APP_USERNAME: ${{ secrets.TEST_USERNAME }}
+#          APP_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+        run: mvn test -Dheadless=true -Dusername="${{ secrets.TEST_USERNAME }}" -Dpassword="${{ secrets.TEST_PASSWORD }}"
       # 获取gh-pages历史（用于allure趋势图）
       - name: Get Allure history
         uses: actions/checkout@v4

@@ -4,20 +4,24 @@ import auth.LoginManager;
 import auth.SkipLogin;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.options.WaitUntilState;
 import factory.PlaywrightFactory;
+import listeners.RetryListener;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
 import pages.CommonComponent;
 import pages.HomePage;
+import utils.ConfigManager;
+import utils.ScreenshotUtil;
+import utils.TraceUtil;
 
 import java.lang.reflect.Method;
 import java.util.Properties;
 
+@Slf4j
+@Listeners(RetryListener.class)
 public class BaseTest {
-    private static final Logger log = LoggerFactory.getLogger(BaseTest.class);
     protected PlaywrightFactory pf;
     protected Properties prop;
 
@@ -26,18 +30,20 @@ public class BaseTest {
 
     @BeforeSuite
     public void loginBeforeSuite() {
-        PlaywrightFactory tempPf = new PlaywrightFactory();
-        Properties tempProp = tempPf.initProp();
+        LoginManager loginManager = new LoginManager(new PlaywrightFactory(), new ConfigManager().initProp());
+//        PlaywrightFactory tempPf = new PlaywrightFactory();
+//        prop = new ConfigManager().initProp();
+//        Properties tempProp = new ConfigManager().initProp();
         // 实例化 LoginManager 并执行登录
-        LoginManager loginManager = new LoginManager(tempPf, tempProp);
-        loginManager.loginNStore();
+//        LoginManager loginManager = new LoginManager(tempPf, prop);
+        loginManager.ensureLogin();
     }
 
     @Parameters("browser")
     @BeforeTest
     public void setUp(@Optional String browserName) {
         pf = new PlaywrightFactory();
-        prop = pf.initProp();
+        prop = new ConfigManager().initProp();
         if (browserName != null && !browserName.isBlank()) {
             prop.setProperty("browser", browserName);
         }
@@ -50,12 +56,21 @@ public class BaseTest {
         boolean useLoginState = !isSkipLogin;
         log.info("当前执行用例: {} | 是否加载登录态: {}", method.getName(), useLoginState);
         // 每个用例开始前，创建一个全新的 Context/Page 并导航到目标 URL，实现极速隔离
-        Page page = pf.createContextAndPage(prop.getProperty("url"), useLoginState);
+        Page page = pf.createContextAndPage(useLoginState);
+        page.navigate(prop.getProperty("url").trim(), new Page.NavigateOptions()
+                .setWaitUntil(WaitUntilState.DOMCONTENTLOADED));
         commonComponent = new CommonComponent(page);
         homePage = new HomePage(page);
         //将page、context存入result，监听器可以安全获取
         result.setAttribute("page", page);
         result.setAttribute("context", PlaywrightFactory.getContext());
+
+//        try {
+//
+//        } catch(Exception e){
+//            log.error("打开首页失败，但是继续执行后续测试", e);
+//            // 不要直接抛异常
+//        }
     }
 
     @AfterMethod
@@ -63,16 +78,16 @@ public class BaseTest {
         BrowserContext context = (BrowserContext) result.getAttribute("context");
         Page page = (Page) result.getAttribute("page");
         // 失败保存截图和 trace
-        if (ITestResult.FAILURE == result.getStatus() || result.getStatus() == ITestResult.SUCCESS_PERCENTAGE_FAILURE) {
+        if (ITestResult.FAILURE == result.getStatus()) {
             Throwable throwable = result.getThrowable();
             if(throwable instanceof AssertionError){
                 log.error("【断言失败】{}", result.getName());
             }else{
-                log.error("【程序异常(broken)】{}", result.getName(), throwable);
+                log.error("【程序异常(broken)】{}: {}", result.getName(), throwable.getMessage());
             }
 
-            pf.saveScreenshot(page);
-            pf.saveTrace(context, result.getName());
+            ScreenshotUtil.saveScreenshotToAllure(page);
+            TraceUtil.saveTraceToAllure(context, result.getName());
         } else {
             // 关闭 trace
             if (context != null) {

@@ -2,6 +2,7 @@
 <suite name="商城回归测试 suite" thread-count="3" parallel="tests" verbose="2" >
     <listeners>
         <listener class-name="listeners.AllureReportListener"/>
+        <listener class-name="listeners.RetryListener"/>
     </listeners>
     <test name = "主页测试" >
         <parameter name="browser" value=""/>

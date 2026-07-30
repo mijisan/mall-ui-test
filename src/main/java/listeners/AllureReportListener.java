@@ -1,33 +1,21 @@
 package listeners;
 
-import com.microsoft.playwright.BrowserContext;
-import com.microsoft.playwright.Page;
-import com.microsoft.playwright.Tracing;
-import io.qameta.allure.Allure;
-import io.qameta.allure.Attachment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
-import java.io.ByteArrayInputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
+@Slf4j
 public class AllureReportListener implements ITestListener {
-
-    private static final Logger log = LoggerFactory.getLogger(AllureReportListener.class);
 
     @Override
     public void onStart(ITestContext context) {
-        log.info("测试套件开始: {}", context.getName());
+        log.info("Test开始: {}", context.getName());
     }
 
     @Override
     public void onFinish(ITestContext context) {
-        log.info("测试套件结束: {}", context.getName());
+        log.info("Test结束: {}", context.getName());
     }
 
     @Override
@@ -45,9 +33,13 @@ public class AllureReportListener implements ITestListener {
 
     @Override
     public void onTestFailure(ITestResult result) {
-        log.error("测试失败：{}", result.getName());
+        int retryCount = result.getMethod().getCurrentInvocationCount() - 1;
+        if (retryCount > 0) {
+            log.warn("测试失败（第{}次重试）：{}", retryCount, result.getName());
+        } else {
+            log.error("测试失败：{}", result.getName());
+        }
     }
-
 
     @Override
     public void onTestSkipped(ITestResult result) {

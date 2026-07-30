@@ -5,6 +5,7 @@ import base.BaseTest;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import listeners.RetryAnalyzer;
 import lombok.extern.slf4j.Slf4j;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -52,10 +53,11 @@ public class ProductPageTest extends BaseTest {
     @SkipLogin
     @Test(description = "加入对比列表")
     public void testAddComparison() {
-        ProductPage productPage = homePage.clickProductLink(prop.getProperty("productName"));
+        String productName = prop.getProperty("productName");
+        ProductPage productPage = homePage.clickProductLink(productName);
         productPage.clickCompareBtn();
         AssertUtils.assertVisible(productPage.getAlertMeg(), "提示框");
-        AssertUtils.assertContainsText(productPage.getAlertMeg(), "Success: You have added MacBook to your product comparison!", "提示框");
+        AssertUtils.assertContainsText(productPage.getAlertMeg(), "Success: You have added " + productName + " to your product comparison!", "提示框");
     }
 
     @Story("商品信息")
@@ -75,11 +77,15 @@ public class ProductPageTest extends BaseTest {
     @SkipLogin
     @Test(description = "添加有效数量商品到购物车")
     public void testAddValidQuantity() {
-        ProductPage productPage = homePage.clickProductLink(prop.getProperty("productName"));
+        String productName = prop.getProperty("productName");
+        ProductPage productPage = homePage.clickProductLink(productName);
         productPage.addQty("1");
         productPage.clickAdd2CartBtn();
+        long start = System.currentTimeMillis();
         AssertUtils.assertVisible(productPage.getAlertMeg(), "提示框");
-        AssertUtils.assertContainsText(productPage.getAlertMeg(), "Success: You have added MacBook to your shopping cart!", "提示框");
+        System.out.println("Alert出现耗时：" + (System.currentTimeMillis() - start));
+//        AssertUtils.assertVisible(productPage.getAlertMeg(), "提示框");
+        AssertUtils.assertContainsText(productPage.getAlertMeg(), "Success: You have added " + productName + " to your shopping cart!", "提示框");
         AssertUtils.assertContainsText(commonComponent.getCartTotalText(), "1 item(s) - $602.00", "迷你购物车");
     }
 
@@ -90,7 +96,10 @@ public class ProductPageTest extends BaseTest {
         ProductPage productPage = homePage.clickProductLink(prop.getProperty("productName"));
         productPage.addQty("0");
         productPage.clickAdd2CartBtn();
+        long start = System.currentTimeMillis();
         AssertUtils.assertVisible(productPage.getAlertMeg(), "提示框");
+        System.out.println("Alert出现耗时：" + (System.currentTimeMillis() - start));
+//        AssertUtils.assertVisible(productPage.getAlertMeg(), "提示框");
         AssertUtils.assertContainsText(commonComponent.getCartTotalText(), "0 item(s) - $0.00", "迷你购物车");
     }
 

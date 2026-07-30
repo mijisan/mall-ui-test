@@ -1,24 +1,19 @@
 package factory;
 
 import com.microsoft.playwright.*;
-import com.microsoft.playwright.options.WaitUntilState;
-import io.qameta.allure.Allure;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Base64;
 import java.util.Properties;
 
+/**
+ * Playwright 浏览器工厂，负责浏览器/Context/Page 的创建与销毁
+ */
+@Slf4j
 public class PlaywrightFactory {
 
-    private final Logger log = LoggerFactory.getLogger(PlaywrightFactory.class);
     private static final ThreadLocal<Playwright> tlPlaywright = new ThreadLocal<>();
-    private static final ThreadLocal<Browser> tlBrowser = new ThreadLocal<>(); // 全局复用（如果单线程或配合锁）
+    private static final ThreadLocal<Browser> tlBrowser = new ThreadLocal<>();
     private static final ThreadLocal<BrowserContext> tlBrowserContext = new ThreadLocal<>();
     private static final ThreadLocal<Page> tlPage = new ThreadLocal<>();
 
@@ -31,10 +26,9 @@ public class PlaywrightFactory {
     }
 
     public void initBrowser(Properties prop) {
-
         String browserName = prop.getProperty("browser").trim().toLowerCase();
         // 优先使用系统属性（CI 环境），其次使用配置文件
-        boolean headlessMode = Boolean.parseBoolean(System.getProperty("headless", prop.getProperty("headless")));
+        boolean headlessMode = Boolean.parseBoolean(prop.getProperty("headless"));
         Playwright playwright = Playwright.create();
         tlPlaywright.set(playwright);
 
@@ -62,7 +56,7 @@ public class PlaywrightFactory {
     /**
      * 每个测试方法执行前：创建一个完全隔离的 BrowserContext 和 Page
      */
-    public Page createContextAndPage(String url, boolean useLoginState) {
+    public Page createContextAndPage(boolean useLoginState) {
         Browser.NewContextOptions contextOptions = new Browser.NewContextOptions();
         // 如果需要加载登录态，则设置 storageState 路径
         if (useLoginState) {
@@ -77,30 +71,26 @@ public class PlaywrightFactory {
         context.tracing().start(new Tracing.StartOptions()
                 .setScreenshots(true)
                 .setSnapshots(true)
-                .setSources(true));
+                .setSources(false));
         tlBrowserContext.set(context);
         Page page = context.newPage();
         // 理想情况应该在4s以内
         page.setDefaultTimeout(5000);
         page.setDefaultNavigationTimeout(60000);
         tlPage.set(page);
-
-        if (url != null && !url.isBlank()) {
-            page.navigate(url.trim(), new Page.NavigateOptions()
-                    .setWaitUntil(WaitUntilState.DOMCONTENTLOADED));
-        }
         return page;
     }
-
 
     public void closeContextAndPage() {
         if (tlPage.get() != null) {
             tlPage.get().close();
             tlPage.remove();
+            log.info("已关闭Page...");
         }
         if (tlBrowserContext.get() != null) {
             tlBrowserContext.get().close();
             tlBrowserContext.remove();
+            log.info("已关闭Context...");
         }
     }
 
@@ -108,67 +98,12 @@ public class PlaywrightFactory {
         if (tlBrowser.get() != null) {
             tlBrowser.get().close();
             tlBrowser.remove();
+            log.info("已关闭Browser...");
         }
         if (tlPlaywright.get() != null) {
             tlPlaywright.get().close();
             tlPlaywright.remove();
-        }
-    }
-
-    public Properties initProp() {
-        Properties prop = new Properties();
-        try {
-            // 从classpath加载配置文件
-            InputStream inputStream = PlaywrightFactory.class.getClassLoader()
-                    .getResourceAsStream("config/config.properties");
-
-            if (inputStream != null) {
-                prop.load(inputStream);
-                log.info("配置文件加载成功: config.properties");
-                inputStream.close();
-            } else {
-                log.warn("未找到配置文件 config.properties，将使用默认配置");
-            }
-        } catch (Exception e) {
-            log.error("加载配置文件失败", e);
-        }
-        return prop;
-    }
-
-    public static String takeScreenshot() {
-        String path = System.getProperty("user.dir") + "/target/screenshot/" + System.currentTimeMillis() + ".png";
-        byte[] buffer = getPage().screenshot(new Page.ScreenshotOptions()
-                .setPath(Paths.get(path))
-                .setFullPage(true));
-        return Base64.getEncoder().encodeToString(buffer);
-    }
-
-    public void saveScreenshot(Page page){
-        if(page == null) return;
-        try {
-            byte[] bytes = page.screenshot(new Page.ScreenshotOptions().setFullPage(true));
-            Allure.addAttachment("失败截图", "image/png", new ByteArrayInputStream(bytes), ".png");
-            log.info("失败截图添加成功");
-        } catch (Exception e) {
-            log.error("截图失败", e);
-        }
-
-    }
-
-    public void saveTrace(BrowserContext context, String testName){
-        if (context != null) {
-            try {
-                Path traceDir = Paths.get("target/playwright-traces");
-                Files.createDirectories(traceDir);
-                Path tracePath = traceDir.resolve(testName + System.currentTimeMillis() + "-trace.zip");
-                context.tracing().stop(new Tracing.StopOptions().setPath(tracePath));
-                try(InputStream is = Files.newInputStream(tracePath)){
-                    Allure.addAttachment("Playwright Trace 追踪文件", "application/zip", is, ".zip");
-                    log.info("Trace附件添加成功");
-                }
-            } catch (Exception e) {
-                log.error("未能保存追踪文件：{}", e.getMessage());
-            }
+            log.info("已关闭Playwright...");
         }
     }
 }
